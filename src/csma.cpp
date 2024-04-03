@@ -111,13 +111,17 @@ int main(int argc, char* argv[]) {
 
     for (int ticks = 0; ticks < total_simulation_time; ticks++) {
         if (channel_occupied) {
-            // TODO: freeze node countdowns but decrement active_node's
-            // backoff
+            // Freeze node countdowns but decrement active_node's backoff
+            Node active_node_obj = get_node(active_node);
+            active_node_obj.backoff--;
         } else {
             std::vector<int> ready_nodes = get_ready_node_ids();
 
             if (ready_nodes.empty()) {
-                // TODO: decrement backoff of all nodes
+                // Decrement backoff of all nodes
+                for (auto& node : nodes) {
+                    node.backoff--;
+                }
             } else {
                 if (ready_nodes.size() == 1) {
                     // TODO: Implement the transmission of the packet
