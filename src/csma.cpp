@@ -82,12 +82,6 @@ int main(int argc, char* argv[]) {
         return EXIT_FAILURE;
     }
 
-    // Read and output each line from the file
-    // std::string line;
-    // while (std::getline(input_file, line)) {
-    //     std::cout << line << std::endl;
-    // }
-
     assign_values(input_file);
 
     input_file.close();

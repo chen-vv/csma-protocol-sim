@@ -46,4 +46,11 @@ bool set_channel_occupied(bool is_occupied);
 
 Node get_node(int node_id);
 
+/**
+ * @brief Read the input file and assign the values to the variables.
+ * 
+ * @param input_file Input file stream.
+ */
+void assign_values(std::ifstream& input_file);
+
 #endif // CSMA_H
