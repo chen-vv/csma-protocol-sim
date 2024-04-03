@@ -49,6 +49,24 @@ void assign_values(std::ifstream &input_file) {
     }
 }
 
+int generate_backoff(int node_id, int ticks, int R) {
+    int backoff = (node_id + ticks) % R;
+    return backoff;
+}
+
+bool set_channel_occupied(bool is_occupied) {
+    if (is_occupied && channel_occupied) {
+        return false;
+    }
+
+    channel_occupied = is_occupied;
+    return true;
+}
+
+Node get_node(int node_id) {
+    return nodes[node_id];
+}
+
 int main(int argc, char* argv[]) {
     // Check for the correct number of arguments
     if (argc != 2) {
@@ -74,16 +92,23 @@ int main(int argc, char* argv[]) {
 
     input_file.close();
 
-    clk = 0;
-    channel_occuiped = false;
+    channel_occupied = false;
     num_packets_received = 0;
 
     // For each node, initialize its status and other properties
     for (auto& node : nodes) {
         node.collision_count = 0;
-        node.backoff = 0;
-        node.R = R.empty() ? 0 : R[0];
+        node.R = R[0];
         node.status = READY_TO_TRANSMIT;
+        node.backoff = generate_backoff(node.id, 0, node.R);
+    }
+
+    for (int ticks = 0; ticks < total_simulation_time; ticks++) {
+        if (channel_occupied) {
+            
+        } else {
+
+        }
     }
 
     return EXIT_SUCCESS;
