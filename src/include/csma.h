@@ -25,4 +25,11 @@ int clk;
 bool channel_occuiped;
 int num_packets_received;
 
+/**
+ * @brief Read the input file and assign the values to the variables.
+ * 
+ * @param input_file Input file stream.
+ */
+void assign_values(std::ifstream& input_file);
+
 #endif // CSMA_H
