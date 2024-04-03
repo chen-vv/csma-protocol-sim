@@ -25,7 +25,7 @@ int total_simulation_time;
 int clk;
 bool channel_occupied;
 int num_packets_received;
-int active_node; // The id of the node currently transmitting the packet
+int active_node_id; // The id of the node currently transmitting the packet. TODO: rename better
 
 /**
  *  node_id = ID of node

@@ -112,8 +112,8 @@ int main(int argc, char* argv[]) {
     for (int ticks = 0; ticks < total_simulation_time; ticks++) {
         if (channel_occupied) {
             // Freeze node countdowns but decrement active_node's backoff
-            Node active_node_obj = get_node(active_node);
-            active_node_obj.backoff--;
+            Node active_node = get_node(active_node_id);
+            active_node.backoff--;
         } else {
             std::vector<int> ready_nodes = get_ready_node_ids();
 
@@ -124,9 +124,35 @@ int main(int argc, char* argv[]) {
                 }
             } else {
                 if (ready_nodes.size() == 1) {
-                    // TODO: Implement the transmission of the packet
+                    bool transmission_started = set_channel_occupied(true);
+
+                    if (transmission_started) {
+                        active_node_id = ready_nodes[0];
+                        nodes[active_node_id].status = TRANSMIT;
+                    }
                 } else {
-                    // TODO: Handle collision
+                    for (auto& node : nodes) {
+                        if (node.status == READY_TO_TRANSMIT) {
+                            node.collision_count++;
+
+                            if (node.collision_count > max_retransmission_attempt) {
+                                // Drop packet and reset node
+                                node.R = R[0];
+                                node.collision_count = 0;
+                                node.backoff = generate_backoff(node.id, ticks, node.R);
+                                node.status = WAITING;
+                                continue;
+                            }
+
+                            // Made a post (#345) asking about this.
+                            // For now, assume we just double R  
+                            // node.R = R[node.collision_count];
+                            node.R = node.R * 2;
+
+                            node.backoff = generate_backoff(node.id, ticks, node.R);
+                            node.status = WAITING;
+                        }
+                    }
                 }
             }
         }
