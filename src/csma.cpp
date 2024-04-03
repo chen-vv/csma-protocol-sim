@@ -67,6 +67,18 @@ Node get_node(int node_id) {
     return nodes[node_id];
 }
 
+std::vector<int> get_ready_node_ids() {
+    std::vector<int> ready_nodes;
+
+    for (const auto& node : nodes) {
+        if (node.status == READY_TO_TRANSMIT) {
+            ready_nodes.push_back(node.id);
+        }
+    }
+
+    return ready_nodes;
+}
+
 int main(int argc, char* argv[]) {
     // Check for the correct number of arguments
     if (argc != 2) {
@@ -99,9 +111,20 @@ int main(int argc, char* argv[]) {
 
     for (int ticks = 0; ticks < total_simulation_time; ticks++) {
         if (channel_occupied) {
-            
+            // TODO: freeze node countdowns but decrement active_node's
+            // backoff
         } else {
+            std::vector<int> ready_nodes = get_ready_node_ids();
 
+            if (ready_nodes.empty()) {
+                // TODO: decrement backoff of all nodes
+            } else {
+                if (ready_nodes.size() == 1) {
+                    // TODO: Implement the transmission of the packet
+                } else {
+                    // TODO: Handle collision
+                }
+            }
         }
     }
 

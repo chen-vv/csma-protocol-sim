@@ -44,6 +44,11 @@ int generate_backoff(int node_id, int ticks, int R);
 */
 bool set_channel_occupied(bool is_occupied);
 
+/**
+ * Returns a list of node IDs that are ready to transmit.
+*/
+std::vector<int> get_ready_node_ids();
+
 Node get_node(int node_id);
 
 /**
