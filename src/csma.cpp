@@ -1,3 +1,18 @@
+/** 
+ * @file csma.cpp
+ * @brief A toy simulation of the Carrier Sense Multiple Access (CSMA) protocol.
+ *
+ * This file contains the function implementations and main() function
+ * of the CSMA simulation. 
+ *
+ * @author Vicky Chen (chen-vv)
+ * @author Eric Omielan (eomielan)
+ * @bug No known bugs.
+ */
+
+/* -- Includes -- */
+
+/* Standard library includes. */
 #include <iostream>
 #include <fstream>
 #include <sstream>
@@ -5,6 +20,7 @@
 #include <cstdlib>
 #include <iomanip>
 
+/* Custom includes */
 #include "include/csma.h"
 
 void assign_values(std::ifstream& input_file) {
@@ -89,9 +105,9 @@ void transmit_packet(int active_node_id, int ticks) {
     std::cout << "Channel is occupied by node " << active_node_id << std::endl;
 
     Node& active_node = nodes[active_node_id];
-    active_node.ticks_remaining--;
+    active_node.packet_ticks_remaining--;
 
-    if (active_node.ticks_remaining == TRANSMIT_COMPLETE) {
+    if (active_node.packet_ticks_remaining == TRANSMIT_COMPLETE) {
         num_packets_received++;
         active_node.backoff = generate_backoff(active_node.id, ticks + 1, active_node.R);
         set_channel_occupied(false);
@@ -100,10 +116,38 @@ void transmit_packet(int active_node_id, int ticks) {
     }
 }
 
+/** 
+ * @brief The CSMA simulation entrypoint.
+ *
+ * This function is the entry point of the CSMA simulation program. 
+ * It processes command line arguments to determine the input file,
+ * simulates the CSMA protocol, then writes the link utilization rate
+ * to an output file. The output file is named "output.txt" by default,
+ * though the user may specify an alternative name via the command line.
+ * 
+ * In the simulation, each tick of the simulated clock is represented
+ * by one iteration of the main loop. In each tick, the program checks
+ * the status of the channel and the nodes. 
+ * 
+ * If the channel is idle, the
+ * program checks if any nodes are ready to transmit. If there is only
+ * one node ready to transmit, the node begins transmitting. If there
+ * are multiple nodes ready to transmit, a collision is detected and
+ * the nodes must back off and retransmit.
+ * 
+ * If the channel is occupied, the program checks if the node currently
+ * transmitting has finished transmitting. If the node has finished
+ * transmitting, the channel is marked as idle and the node backs off and
+ * waits for the next opportunity to retransmit a new packet. 
+ *
+ * @param argc The number of command-line arguments.
+ * @param argv An array of strings containing the command-line arguments.
+ * @return Returns EXIT_SUCCESS on success, EXIT_FAILURE on failure.
+ */
 int main(int argc, char* argv[]) {
     // Check for the correct number of arguments
-    if (argc != 2) {
-        std::cerr << "Usage: " << argv[0] << " <inputfilename>" << std::endl;
+    if (argc != 2 && argc != 3) {
+        std::cerr << "Usage: " << argv[0] << " <inputfilename> [outputfilename]" << std::endl;
         return EXIT_FAILURE;
     }
 
@@ -147,7 +191,7 @@ int main(int argc, char* argv[]) {
                     set_channel_occupied(true);
 
                     active_node_id = ready_nodes[0];
-                    nodes[active_node_id].ticks_remaining = packet_length;
+                    nodes[active_node_id].packet_ticks_remaining = packet_length;
 
                     transmit_packet(active_node_id, ticks);
                 } else {
@@ -180,6 +224,8 @@ int main(int argc, char* argv[]) {
         }
     }
 
+    // TODO: make this output file name output.txt by default, but the user
+    // can pass in another name via the command line
     std::ofstream output_file("output.txt");
 
     if (!output_file.is_open()) {

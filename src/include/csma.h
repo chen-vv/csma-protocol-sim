@@ -1,19 +1,67 @@
+/** 
+ * @file csma.h
+ * @brief Function prototypes and data structures for CSMA simulation.
+ *
+ * This contains the function prototypes and any macros, constants,
+ * or global variables you will need for simulating the Carrier Sense
+ * Multiple Access (CSMA) protocol.
+ *
+ * @author Vicky Chen (chen-vv)
+ * @author Eric Omielan (eomielan)
+ * @bug No known bugs.
+ */
+
 #ifndef CSMA_H
 #define CSMA_H
 
 #include <vector>
 
+/**
+ * @brief Macro to determine whether a node is ready to transmit.
+ * 
+ * This macro is used to check the node's backoff state. When the value
+ * of the backoff equals this macro, the node is ready to transmit its 
+ * packet.
+*/
 #define READY_TO_TRANSMIT 0
+
+/**
+ * @brief Macro to determine whether a node has completed transmitting.
+ * 
+ * This macro is used to check whether a node's packet transmission is
+ * completed. When the value of the node's ticks_remaining equals this
+ * macro, the node has completed transmitting its packet.
+*/
 #define TRANSMIT_COMPLETE 0
 
+/**
+ * @brief Structure to represent a node in the CSMA simulation.
+ * 
+ * This structure contains the necessary information to represent a node
+ * in the CSMA simulation. It includes the node's ID, the number of
+ * collisions the node has experienced, the backoff value, the R value,
+ * and the number of ticks remaining for the node to finish transmitting.
+*/
 struct Node {
-    int id;
-    int collision_count;
-    int backoff;
-    int R;
-    int ticks_remaining; // Number of ticks remaining for the node to finish transmitting
+    int id;                     /**< The unique identifier of the node. */                     
+    int collision_count;        /**< The number of collisions experienced. */
+    int backoff;                /**< 
+                                  * The backoff value of the node.
+                                  * This value determines the amount of time the node
+                                  * must wait before transmitting its packet. 
+                                  */
+    int R;                      /**< 
+                                  * The R value of the node.  
+                                  * This value is used to determine the upper 
+                                  * limit of the backoff value.
+                                  */
+    int packet_ticks_remaining;        /**< 
+                                  * The number of ticks remaining for the node
+                                  * to finish transmitting its packet.
+                                  */
 };
 
+// TODO: left off here
 std::vector<Node> nodes;
 int packet_length;
 std::vector<int> R;
