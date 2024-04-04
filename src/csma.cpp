@@ -103,11 +103,13 @@ int main(int argc, char* argv[]) {
     num_packets_received = 0;
 
     // For each node, initialize its status and other properties
+    int curr_id = 0;
     for (auto& node : nodes) {
+        node.id = curr_id++;
         node.collision_count = 0;
         node.R = R[0];
-        node.status = READY_TO_TRANSMIT;
         node.backoff = generate_backoff(node.id, 0, node.R);
+        node.status = node.backoff == 0 ? READY_TO_TRANSMIT : WAITING;
     }
 
     for (int ticks = 0; ticks < total_simulation_time; ticks++) {
@@ -117,8 +119,11 @@ int main(int argc, char* argv[]) {
 
             if (active_node.ticks_remaining == 0) {
                 num_packets_received++;
-                active_node.status = WAITING;
-                // Not sure if backoff should be reset here?
+                // TODO: Check if this is correct
+                active_node.R = R[0];
+                active_node.collision_count = 0;
+                active_node.backoff = generate_backoff(active_node.id, ticks, active_node.R);
+                active_node.status = active_node.backoff == 0 ? READY_TO_TRANSMIT : WAITING;
                 set_channel_occupied(false);
             }
         } else {
@@ -158,7 +163,7 @@ int main(int argc, char* argv[]) {
                             node.R = node.R * 2;
 
                             node.backoff = generate_backoff(node.id, ticks, node.R);
-                            node.status = WAITING;
+                            node.status = node.backoff == 0 ? READY_TO_TRANSMIT : WAITING;
                         }
                     }
                 }
