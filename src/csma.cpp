@@ -72,7 +72,8 @@ std::vector<int> get_ready_node_ids() {
     std::vector<int> ready_nodes;
 
     for (const auto& node : nodes) {
-        if (node.status == READY_TO_TRANSMIT) {
+        // if (node.status == READY_TO_TRANSMIT) {
+        if (node.backoff == 0) {
             ready_nodes.push_back(node.id);
         }
     }
@@ -113,23 +114,36 @@ int main(int argc, char* argv[]) {
     }
 
     for (int ticks = 0; ticks < total_simulation_time; ticks++) {
+        std::cout << "Tick: " << ticks << std::endl;
+        for (auto& node : nodes) {
+            std::cout << "Node " << node.id << " backoff: " << node.backoff << std::endl;
+        }
+
+
         if (channel_occupied) {
+transmission:
+            std::cout << "Channel is occupied by node " << active_node_id << std::endl;
+
             Node& active_node = nodes[active_node_id];
             active_node.ticks_remaining--;
 
             if (active_node.ticks_remaining == 0) {
                 num_packets_received++;
                 // TODO: Check if this is correct
-                active_node.R = R[0];
-                active_node.collision_count = 0;
-                active_node.backoff = generate_backoff(active_node.id, ticks, active_node.R);
+                // active_node.R = R[0];
+                // active_node.collision_count = 0;
+                active_node.backoff = generate_backoff(active_node.id, ticks + 1, active_node.R);
                 active_node.status = active_node.backoff == 0 ? READY_TO_TRANSMIT : WAITING;
                 set_channel_occupied(false);
+
+                std::cout << "Node " << active_node_id << " finished transmitting. new backoff " << nodes[active_node_id].backoff  << std::endl;
             }
         } else {
             std::vector<int> ready_nodes = get_ready_node_ids();
 
             if (ready_nodes.empty()) {
+                std::cout << "Channel is idle.\n" << std::endl;
+
                 // Decrement backoff of all nodes
                 for (auto& node : nodes) {
                     node.backoff--;
@@ -142,6 +156,8 @@ int main(int argc, char* argv[]) {
                         active_node_id = ready_nodes[0];
                         nodes[active_node_id].status = TRANSMIT;
                         nodes[active_node_id].ticks_remaining = packet_length;
+
+                        goto transmission;
                     }
                 } else {
                     for (auto& node : nodes) {
@@ -180,6 +196,8 @@ int main(int argc, char* argv[]) {
 
     output_file << std::fixed << std::setprecision(2);
     output_file << static_cast<double>(num_packets_received) / total_simulation_time << std::endl;
+
+    std::cout << "packets transferred: " << num_packets_received << ", T = " << total_simulation_time << std::endl;
 
     output_file.close();
 
