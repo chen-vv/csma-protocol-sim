@@ -61,16 +61,18 @@ struct Node {
                                   */
 };
 
-// TODO: left off here
-std::vector<Node> nodes;
-int packet_length;
-std::vector<int> R;
-int max_retransmission_attempt;
-int total_simulation_time;
-int clk;
-bool channel_occupied;
-int num_packets_received;
-int active_node_id; // The id of the node currently transmitting the packet. TODO: rename better
+std::vector<Node> nodes;        /**< The nodes in the simulation that can send packets. */
+int packet_length;              /**< The length of the packet in number of ticks it takes to transmit. */
+std::vector<int> R;             /**< The possible backoff windows. */
+int max_retransmission_attempt; /**< 
+                                  * The maximum number of retransmission attempts before the 
+                                  * packet is dropped.
+                                  */
+int total_simulation_time;      /**< The total number of ticks to simulate. */
+int clk;                        /**< The current tick of the simulation. */
+bool channel_occupied;          /**< The state of the transmission channel. */
+int num_packets_received;       /**< The number of packets successfully transmitted. */
+int active_node_id;             /**< The id of the node currently transmitting the packet. */
 
 /**
  *  node_id = ID of node
@@ -82,17 +84,22 @@ int active_node_id; // The id of the node currently transmitting the packet. TOD
 int generate_backoff(int node_id, int ticks, int R);
 
 /**
- * Called by a node. IF the node is about to start transmitting, is_occupied = true
- * Otherwise if the node is finished transmitting, is_occupied = false.
-*/
+ * @brief Set the transmission channel to occupied or unoccupied.
+ * 
+ * This function is called by a node that is about to start transmitting a packet in order to block
+ * the channel from other nodes. It is also called by a node that has finished transmitting its
+ * packet in order to unblock the channel.
+ * 
+ * @param is_occupied A boolean value indicating whether to set the channel to occupied or not.
+ */
 void set_channel_occupied(bool is_occupied);
 
 /**
- * Returns a list of node IDs that are ready to transmit.
-*/
+ * @brief Get the nodes that are ready to transmit a packet (ie have a backoff of 0).
+ * 
+ * @return std::vector<int> A list of node IDs that are ready to transmit.
+ */
 std::vector<int> get_ready_node_ids();
-
-Node& get_node(int node_id);
 
 /**
  * @brief Read the input file and assign the values to the variables.
@@ -101,9 +108,18 @@ Node& get_node(int node_id);
  */
 void assign_values(std::ifstream& input_file);
 
+/**
+ * @brief Initialize the nodes in the simulation and their properties.
+ */
 void initialize_nodes();
 
-void transmit_packet();
+/**
+ * @brief Transmit a packet from the active node.
+ * 
+ * @param active_node_id The ID of the node transmitting the packet.
+ * @param ticks The current tick of the simulation.
+ */
+void transmit_packet(int active_node_id, int ticks);
 
 
 #endif // CSMA_H

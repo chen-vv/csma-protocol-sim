@@ -74,10 +74,6 @@ void set_channel_occupied(bool is_occupied) {
     channel_occupied = is_occupied;
 }
 
-Node& get_node(int node_id) {
-    return nodes[node_id];
-}
-
 std::vector<int> get_ready_node_ids() {
     std::vector<int> ready_nodes;
 
@@ -181,52 +177,56 @@ int main(int argc, char* argv[]) {
             std::vector<int> ready_nodes = get_ready_node_ids();
 
             if (ready_nodes.empty()) {
+                // No nodes are ready to transmit
                 std::cout << "Channel is idle.\n" << std::endl;
 
                 for (auto& node : nodes) {
                     node.backoff--;
                 }
+            } else if (ready_nodes.size() == 1) {
+                // Only one node is ready to transmit
+                set_channel_occupied(true);
+
+                active_node_id = ready_nodes[0];
+                nodes[active_node_id].packet_ticks_remaining = packet_length;
+
+                transmit_packet(active_node_id, ticks);
             } else {
-                if (ready_nodes.size() == 1) {
-                    set_channel_occupied(true);
+                // Multiple nodes are ready to transmit, so a collision occurs
+                std::cout << "Collision detected b/w:" << std::endl;
 
-                    active_node_id = ready_nodes[0];
-                    nodes[active_node_id].packet_ticks_remaining = packet_length;
+                for (int node_id : ready_nodes) {
+                    Node& node = nodes[node_id];
 
-                    transmit_packet(active_node_id, ticks);
-                } else {
-                    std::cout << "Collision detected b/w:" << std::endl;
+                    std::cout << "Node " << node.id << std::endl;
 
-                    for (auto& node : nodes) {
-                        if (node.backoff == READY_TO_TRANSMIT) {
-                            std::cout << "Node " << node.id << std::endl;
+                    node.collision_count++;
 
-                            node.collision_count++;
-
-                            if (node.collision_count > max_retransmission_attempt) {
-                                // Drop packet and reset node
-                                node.R = R[0];
-                                node.collision_count = 0;
-                                node.backoff = generate_backoff(node.id, ticks + 1, node.R);
-                                continue;
-                            }
-
-                            // Made a post (#345) asking about this.
-                            // For now, assume we just double R  
-                            // node.R = R[node.collision_count];
-                            node.R = node.R * 2;
-
-                            node.backoff = generate_backoff(node.id, ticks + 1, node.R);
-                        }
+                    if (node.collision_count > max_retransmission_attempt) {
+                        // Drop packet and reset node
+                        node.R = R[0];
+                        node.collision_count = 0;
+                        node.backoff = generate_backoff(node.id, ticks + 1, node.R);
+                        continue;
                     }
+
+                    // Made a post (#345) asking about this.
+                    // For now, assume we just double R  
+                    // node.R = R[node.collision_count];
+                    node.R = node.R * 2;
+
+                    node.backoff = generate_backoff(node.id, ticks + 1, node.R);
                 }
             }
         }
     }
 
-    // TODO: make this output file name output.txt by default, but the user
-    // can pass in another name via the command line
-    std::ofstream output_file("output.txt");
+    std::ofstream output_file;
+    if (argc == 3) {
+        output_file.open(argv[2]);
+    } else {
+        output_file.open("output.txt");
+    }
 
     if (!output_file.is_open()) {
         std::cerr << "Error: Unable to open file output.txt" << std::endl;
