@@ -3,19 +3,12 @@
 
 #include <vector>
 
-enum NodeStatus {
-    READY_TO_TRANSMIT,
-    TRANSMIT,
-    WAITING
-};
-
 struct Node {
     int id;
     int collision_count;
     int backoff;
     int R;
     int ticks_remaining; // Number of ticks remaining for the node to finish transmitting
-    NodeStatus status;
 };
 
 std::vector<Node> nodes;

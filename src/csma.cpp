@@ -72,12 +72,26 @@ std::vector<int> get_ready_node_ids() {
     std::vector<int> ready_nodes;
 
     for (const auto& node : nodes) {
-        if (node.status == READY_TO_TRANSMIT) {
+        if (node.backoff == 0) {
             ready_nodes.push_back(node.id);
         }
     }
 
     return ready_nodes;
+}
+
+void transmit_packet(int ticks) {
+    Node& active_node = nodes[active_node_id];
+    active_node.ticks_remaining--;
+
+    if (active_node.ticks_remaining == 0) {
+        num_packets_received++;
+        // TODO: Check if this is correct
+        active_node.R = R[0];
+        active_node.collision_count = 0;
+        active_node.backoff = generate_backoff(active_node.id, ticks, active_node.R);
+        set_channel_occupied(false);
+    }
 }
 
 int main(int argc, char* argv[]) {
@@ -102,71 +116,57 @@ int main(int argc, char* argv[]) {
     channel_occupied = false;
     num_packets_received = 0;
 
-    // For each node, initialize its status and other properties
+    // For each node, initialize its properties
     int curr_id = 0;
     for (auto& node : nodes) {
         node.id = curr_id++;
         node.collision_count = 0;
         node.R = R[0];
         node.backoff = generate_backoff(node.id, 0, node.R);
-        node.status = node.backoff == 0 ? READY_TO_TRANSMIT : WAITING;
     }
 
     for (int ticks = 0; ticks < total_simulation_time; ticks++) {
         if (channel_occupied) {
-            Node& active_node = nodes[active_node_id];
-            active_node.ticks_remaining--;
+            transmit_packet(ticks);
+            continue;
+        }
 
-            if (active_node.ticks_remaining == 0) {
-                num_packets_received++;
-                // TODO: Check if this is correct
-                active_node.R = R[0];
-                active_node.collision_count = 0;
-                active_node.backoff = generate_backoff(active_node.id, ticks, active_node.R);
-                active_node.status = active_node.backoff == 0 ? READY_TO_TRANSMIT : WAITING;
-                set_channel_occupied(false);
+        std::vector<int> ready_nodes = get_ready_node_ids();
+
+        if (ready_nodes.empty()) {
+            // Decrement backoff of all nodes
+            for (Node& node : nodes) {
+                node.backoff--;
             }
-        } else {
-            std::vector<int> ready_nodes = get_ready_node_ids();
+        } else if (ready_nodes.size() == 1) {
+            // Start transmission, only 1 ready node
+            bool transmission_started = set_channel_occupied(true);
 
-            if (ready_nodes.empty()) {
-                // Decrement backoff of all nodes
-                for (auto& node : nodes) {
-                    node.backoff--;
+            if (transmission_started) {
+                active_node_id = ready_nodes[0];
+                nodes[active_node_id].ticks_remaining = packet_length;
+                transmit_packet(ticks);
+            }
+        } else { // Multiple ready nodes
+            for (int node_id : ready_nodes) {
+                Node& node = nodes[node_id];
+
+                node.collision_count++;
+
+                if (node.collision_count > max_retransmission_attempt) {
+                    // Drop packet and reset node
+                    node.R = R[0];
+                    node.collision_count = 0;
+                    node.backoff = generate_backoff(node.id, ticks, node.R);
+                    continue;
                 }
-            } else {
-                if (ready_nodes.size() == 1) {
-                    bool transmission_started = set_channel_occupied(true);
 
-                    if (transmission_started) {
-                        active_node_id = ready_nodes[0];
-                        nodes[active_node_id].status = TRANSMIT;
-                        nodes[active_node_id].ticks_remaining = packet_length;
-                    }
-                } else {
-                    for (auto& node : nodes) {
-                        if (node.status == READY_TO_TRANSMIT) {
-                            node.collision_count++;
+                // Made a post (#345) asking about this.
+                // For now, assume we just double R  
+                // node.R = R[node.collision_count];
+                node.R = node.R * 2;
 
-                            if (node.collision_count > max_retransmission_attempt) {
-                                // Drop packet and reset node
-                                node.R = R[0];
-                                node.collision_count = 0;
-                                node.backoff = generate_backoff(node.id, ticks, node.R);
-                                node.status = WAITING;
-                                continue;
-                            }
-
-                            // Made a post (#345) asking about this.
-                            // For now, assume we just double R  
-                            // node.R = R[node.collision_count];
-                            node.R = node.R * 2;
-
-                            node.backoff = generate_backoff(node.id, ticks, node.R);
-                            node.status = node.backoff == 0 ? READY_TO_TRANSMIT : WAITING;
-                        }
-                    }
-                }
+                node.backoff = generate_backoff(node.id, ticks, node.R);
             }
         }
     }
