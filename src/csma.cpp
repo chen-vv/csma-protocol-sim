@@ -6,7 +6,7 @@
 
 #include "include/csma.h"
 
-void assign_values(std::ifstream &input_file) {
+void assign_values(std::ifstream& input_file) {
     std::string line;
 
     while (std::getline(input_file, line)) {
@@ -63,7 +63,7 @@ bool set_channel_occupied(bool is_occupied) {
     return true;
 }
 
-Node get_node(int node_id) {
+Node& get_node(int node_id) {
     return nodes[node_id];
 }
 
@@ -111,9 +111,15 @@ int main(int argc, char* argv[]) {
 
     for (int ticks = 0; ticks < total_simulation_time; ticks++) {
         if (channel_occupied) {
-            // Freeze node countdowns but decrement active_node's backoff
-            Node active_node = get_node(active_node_id);
-            active_node.backoff--;
+            Node& active_node = nodes[active_node_id];
+            active_node.ticks_remaining--;
+
+            if (active_node.ticks_remaining == 0) {
+                num_packets_received++;
+                active_node.status = WAITING;
+                // Not sure if backoff should be reset here?
+                set_channel_occupied(false);
+            }
         } else {
             std::vector<int> ready_nodes = get_ready_node_ids();
 
@@ -129,6 +135,7 @@ int main(int argc, char* argv[]) {
                     if (transmission_started) {
                         active_node_id = ready_nodes[0];
                         nodes[active_node_id].status = TRANSMIT;
+                        nodes[active_node_id].ticks_remaining = packet_length;
                     }
                 } else {
                     for (auto& node : nodes) {

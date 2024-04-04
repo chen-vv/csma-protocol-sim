@@ -14,6 +14,7 @@ struct Node {
     int collision_count;
     int backoff;
     int R;
+    int ticks_remaining; // Number of ticks remaining for the node to finish transmitting
     NodeStatus status;
 };
 
@@ -49,7 +50,7 @@ bool set_channel_occupied(bool is_occupied);
 */
 std::vector<int> get_ready_node_ids();
 
-Node get_node(int node_id);
+Node& get_node(int node_id);
 
 /**
  * @brief Read the input file and assign the values to the variables.
