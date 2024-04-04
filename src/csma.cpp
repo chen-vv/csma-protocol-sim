@@ -165,5 +165,16 @@ int main(int argc, char* argv[]) {
         }
     }
 
+    std::ofstream output_file("output.txt");
+
+    if (!output_file.is_open()) {
+        std::cerr << "Error: Unable to open file output.txt" << std::endl;
+        return EXIT_FAILURE;
+    }
+
+    output_file << (double) num_packets_received/total_simulation_time << std::endl;
+
+    output_file.close();
+
     return EXIT_SUCCESS;
 }
