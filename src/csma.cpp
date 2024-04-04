@@ -3,6 +3,7 @@
 #include <sstream>
 #include <string>
 #include <cstdlib>
+#include <iomanip>
 
 #include "include/csma.h"
 
@@ -172,7 +173,8 @@ int main(int argc, char* argv[]) {
         return EXIT_FAILURE;
     }
 
-    output_file << (double) num_packets_received/total_simulation_time << std::endl;
+    output_file << std::fixed << std::setprecision(2);
+    output_file << static_cast<double>(num_packets_received) / total_simulation_time << std::endl;
 
     output_file.close();
 
