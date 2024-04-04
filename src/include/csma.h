@@ -3,11 +3,8 @@
 
 #include <vector>
 
-enum NodeStatus {
-    READY_TO_TRANSMIT,
-    TRANSMIT,
-    WAITING
-};
+#define READY_TO_TRANSMIT 0
+#define TRANSMIT_COMPLETE 0
 
 struct Node {
     int id;
@@ -15,7 +12,6 @@ struct Node {
     int backoff;
     int R;
     int ticks_remaining; // Number of ticks remaining for the node to finish transmitting
-    NodeStatus status;
 };
 
 std::vector<Node> nodes;
@@ -40,10 +36,8 @@ int generate_backoff(int node_id, int ticks, int R);
 /**
  * Called by a node. IF the node is about to start transmitting, is_occupied = true
  * Otherwise if the node is finished transmitting, is_occupied = false.
- * Returns false if is_occupied is true and the channel_occupied is already true, and 
- * returns true otherwise.
 */
-bool set_channel_occupied(bool is_occupied);
+void set_channel_occupied(bool is_occupied);
 
 /**
  * Returns a list of node IDs that are ready to transmit.
@@ -58,5 +52,10 @@ Node& get_node(int node_id);
  * @param input_file Input file stream.
  */
 void assign_values(std::ifstream& input_file);
+
+void initialize_nodes();
+
+void transmit_packet();
+
 
 #endif // CSMA_H

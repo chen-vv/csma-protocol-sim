@@ -33,7 +33,6 @@ void assign_values(std::ifstream& input_file) {
 
             case 'R': {
                 int r_value;
-                R.clear();
                 while (ss >> r_value) {
                     R.push_back(r_value);
                 }
@@ -55,13 +54,8 @@ int generate_backoff(int node_id, int ticks, int R) {
     return backoff;
 }
 
-bool set_channel_occupied(bool is_occupied) {
-    if (is_occupied && channel_occupied) {
-        return false;
-    }
-
+void set_channel_occupied(bool is_occupied) {
     channel_occupied = is_occupied;
-    return true;
 }
 
 Node& get_node(int node_id) {
@@ -72,13 +66,38 @@ std::vector<int> get_ready_node_ids() {
     std::vector<int> ready_nodes;
 
     for (const auto& node : nodes) {
-        // if (node.status == READY_TO_TRANSMIT) {
-        if (node.backoff == 0) {
+        if (node.backoff == READY_TO_TRANSMIT) {
             ready_nodes.push_back(node.id);
         }
     }
 
     return ready_nodes;
+}
+
+void initialize_nodes() {
+    int curr_id = 0;
+    
+    for (auto& node : nodes) {
+        node.id = curr_id++;
+        node.collision_count = 0;
+        node.R = R[0];
+        node.backoff = generate_backoff(node.id, 0, node.R);
+    }
+}
+
+void transmit_packet(int active_node_id, int ticks) {
+    std::cout << "Channel is occupied by node " << active_node_id << std::endl;
+
+    Node& active_node = nodes[active_node_id];
+    active_node.ticks_remaining--;
+
+    if (active_node.ticks_remaining == TRANSMIT_COMPLETE) {
+        num_packets_received++;
+        active_node.backoff = generate_backoff(active_node.id, ticks + 1, active_node.R);
+        set_channel_occupied(false);
+
+        std::cout << "Node " << active_node_id << " finished transmitting. new backoff " << nodes[active_node_id].backoff  << std::endl;
+    }
 }
 
 int main(int argc, char* argv[]) {
@@ -100,18 +119,11 @@ int main(int argc, char* argv[]) {
 
     input_file.close();
 
+    // For each node, initialize its status and other properties
+    initialize_nodes();
+
     channel_occupied = false;
     num_packets_received = 0;
-
-    // For each node, initialize its status and other properties
-    int curr_id = 0;
-    for (auto& node : nodes) {
-        node.id = curr_id++;
-        node.collision_count = 0;
-        node.R = R[0];
-        node.backoff = generate_backoff(node.id, 0, node.R);
-        node.status = node.backoff == 0 ? READY_TO_TRANSMIT : WAITING;
-    }
 
     for (int ticks = 0; ticks < total_simulation_time; ticks++) {
         std::cout << "Tick: " << ticks << std::endl;
@@ -119,49 +131,32 @@ int main(int argc, char* argv[]) {
             std::cout << "Node " << node.id << " backoff: " << node.backoff << std::endl;
         }
 
-
         if (channel_occupied) {
-transmission:
-            std::cout << "Channel is occupied by node " << active_node_id << std::endl;
-
-            Node& active_node = nodes[active_node_id];
-            active_node.ticks_remaining--;
-
-            if (active_node.ticks_remaining == 0) {
-                num_packets_received++;
-                // TODO: Check if this is correct
-                // active_node.R = R[0];
-                // active_node.collision_count = 0;
-                active_node.backoff = generate_backoff(active_node.id, ticks + 1, active_node.R);
-                active_node.status = active_node.backoff == 0 ? READY_TO_TRANSMIT : WAITING;
-                set_channel_occupied(false);
-
-                std::cout << "Node " << active_node_id << " finished transmitting. new backoff " << nodes[active_node_id].backoff  << std::endl;
-            }
+            transmit_packet(active_node_id, ticks);
         } else {
             std::vector<int> ready_nodes = get_ready_node_ids();
 
             if (ready_nodes.empty()) {
                 std::cout << "Channel is idle.\n" << std::endl;
 
-                // Decrement backoff of all nodes
                 for (auto& node : nodes) {
                     node.backoff--;
                 }
             } else {
                 if (ready_nodes.size() == 1) {
-                    bool transmission_started = set_channel_occupied(true);
+                    set_channel_occupied(true);
 
-                    if (transmission_started) {
-                        active_node_id = ready_nodes[0];
-                        nodes[active_node_id].status = TRANSMIT;
-                        nodes[active_node_id].ticks_remaining = packet_length;
+                    active_node_id = ready_nodes[0];
+                    nodes[active_node_id].ticks_remaining = packet_length;
 
-                        goto transmission;
-                    }
+                    transmit_packet(active_node_id, ticks);
                 } else {
+                    std::cout << "Collision detected b/w:" << std::endl;
+
                     for (auto& node : nodes) {
-                        if (node.backoff == 0) {
+                        if (node.backoff == READY_TO_TRANSMIT) {
+                            std::cout << "Node " << node.id << std::endl;
+
                             node.collision_count++;
 
                             if (node.collision_count > max_retransmission_attempt) {
@@ -169,7 +164,6 @@ transmission:
                                 node.R = R[0];
                                 node.collision_count = 0;
                                 node.backoff = generate_backoff(node.id, ticks + 1, node.R);
-                                node.status = WAITING;
                                 continue;
                             }
 
