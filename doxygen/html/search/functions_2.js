@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['main_0',['main',['../csma_8cpp.html#a0ddf1224851353fc92bfbff6f499fa97',1,'csma.cpp']]]
+  ['initialize_5fnodes_0',['initialize_nodes',['../csma_8cpp.html#a4ba3ecef9d840c43d4d4fc4f09f43888',1,'initialize_nodes():&#160;csma.cpp'],['../csma_8h.html#a4ba3ecef9d840c43d4d4fc4f09f43888',1,'initialize_nodes():&#160;csma.cpp']]]
 ];

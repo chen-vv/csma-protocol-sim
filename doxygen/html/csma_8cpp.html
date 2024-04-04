@@ -112,20 +112,21 @@ Functions</h2></td></tr>
 <tr class="memitem:a49ceaee49ef3a94cd666c6ea2b429242" id="r_a49ceaee49ef3a94cd666c6ea2b429242"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a49ceaee49ef3a94cd666c6ea2b429242">assign_values</a> (std::ifstream &amp;input_file)</td></tr>
 <tr class="memdesc:a49ceaee49ef3a94cd666c6ea2b429242"><td class="mdescLeft">&#160;</td><td class="mdescRight">Read the input file and assign the values to the variables.  <br /></td></tr>
 <tr class="separator:a49ceaee49ef3a94cd666c6ea2b429242"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:af8dcc3f4a5941fbbd79029bb3d243943" id="r_af8dcc3f4a5941fbbd79029bb3d243943"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#af8dcc3f4a5941fbbd79029bb3d243943">generate_backoff</a> (int node_id, int ticks, int R)</td></tr>
+<tr class="memitem:af8dcc3f4a5941fbbd79029bb3d243943" id="r_af8dcc3f4a5941fbbd79029bb3d243943"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#af8dcc3f4a5941fbbd79029bb3d243943">generate_backoff</a> (int node_id, int ticks, int <a class="el" href="csma_8h.html#a35dc9a8db4559da7d3e74df94d50eca3">R</a>)</td></tr>
+<tr class="memdesc:af8dcc3f4a5941fbbd79029bb3d243943"><td class="mdescLeft">&#160;</td><td class="mdescRight">Generate a backoff value for a node, which is the pseudorandom number generator following backoff = mod(node_id + ticks, R)  <br /></td></tr>
 <tr class="separator:af8dcc3f4a5941fbbd79029bb3d243943"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5d8ead90a5fa2e6f1058425e9af26544" id="r_a5d8ead90a5fa2e6f1058425e9af26544"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a5d8ead90a5fa2e6f1058425e9af26544">set_channel_occupied</a> (bool is_occupied)</td></tr>
+<tr class="memdesc:a5d8ead90a5fa2e6f1058425e9af26544"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set the transmission channel to occupied or unoccupied.  <br /></td></tr>
 <tr class="separator:a5d8ead90a5fa2e6f1058425e9af26544"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aac8cfcdbbcfb8ff1a20a0dc9ff33666a" id="r_aac8cfcdbbcfb8ff1a20a0dc9ff33666a"><td class="memItemLeft" align="right" valign="top"><a id="aac8cfcdbbcfb8ff1a20a0dc9ff33666a" name="aac8cfcdbbcfb8ff1a20a0dc9ff33666a"></a>
-<a class="el" href="struct_node.html">Node</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>get_node</b> (int node_id)</td></tr>
-<tr class="separator:aac8cfcdbbcfb8ff1a20a0dc9ff33666a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a0c1974ab7503080d34d43389d2e0048f" id="r_a0c1974ab7503080d34d43389d2e0048f"><td class="memItemLeft" align="right" valign="top">std::vector&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a0c1974ab7503080d34d43389d2e0048f">get_ready_node_ids</a> ()</td></tr>
+<tr class="memdesc:a0c1974ab7503080d34d43389d2e0048f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the nodes that are ready to transmit a packet (i.e. have a backoff of 0).  <br /></td></tr>
 <tr class="separator:a0c1974ab7503080d34d43389d2e0048f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a4ba3ecef9d840c43d4d4fc4f09f43888" id="r_a4ba3ecef9d840c43d4d4fc4f09f43888"><td class="memItemLeft" align="right" valign="top"><a id="a4ba3ecef9d840c43d4d4fc4f09f43888" name="a4ba3ecef9d840c43d4d4fc4f09f43888"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>initialize_nodes</b> ()</td></tr>
+<tr class="memdesc:a4ba3ecef9d840c43d4d4fc4f09f43888"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initialize the nodes in the simulation and their properties. <br /></td></tr>
 <tr class="separator:a4ba3ecef9d840c43d4d4fc4f09f43888"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a57ffa02b686d99e8177a1c9c3040bac0" id="r_a57ffa02b686d99e8177a1c9c3040bac0"><td class="memItemLeft" align="right" valign="top"><a id="a57ffa02b686d99e8177a1c9c3040bac0" name="a57ffa02b686d99e8177a1c9c3040bac0"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>transmit_packet</b> (int active_node_id, int ticks)</td></tr>
+<tr class="memitem:a57ffa02b686d99e8177a1c9c3040bac0" id="r_a57ffa02b686d99e8177a1c9c3040bac0"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a57ffa02b686d99e8177a1c9c3040bac0">transmit_packet</a> (int <a class="el" href="csma_8h.html#af6e112a517a7d827590b967d678e9087">active_node_id</a>, int ticks)</td></tr>
+<tr class="memdesc:a57ffa02b686d99e8177a1c9c3040bac0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Transmit a packet from the active node.  <br /></td></tr>
 <tr class="separator:a57ffa02b686d99e8177a1c9c3040bac0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a0ddf1224851353fc92bfbff6f499fa97" id="r_a0ddf1224851353fc92bfbff6f499fa97"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a0ddf1224851353fc92bfbff6f499fa97">main</a> (int argc, char *argv[])</td></tr>
 <tr class="memdesc:a0ddf1224851353fc92bfbff6f499fa97"><td class="mdescLeft">&#160;</td><td class="mdescRight">The CSMA simulation entrypoint.  <br /></td></tr>
@@ -187,7 +188,17 @@ Eric Omielan (eomielan) </dd></dl>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>node_id = ID of node ticks = number of elapsed for loop iterations R = the R value, aka backoff upper limit value, since backoff is in the range of [0, R) Returns the backoff value of the node, which is the pseudorandom number generator following backoff = mod(node_id + ticks, R) </p>
+
+<p>Generate a backoff value for a node, which is the pseudorandom number generator following backoff = mod(node_id + ticks, R) </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">node_id</td><td>The ID of the node to which the backoff value is assigned. </td></tr>
+    <tr><td class="paramname">ticks</td><td>The number of ticks that have elapsed in the simulation. </td></tr>
+    <tr><td class="paramname">R</td><td>The R value of the node, which is the upper limit of the backoff value since the backoff is in the range of [0, R). </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>int The backoff value of the node. </dd></dl>
 
 </div>
 </div>
@@ -205,7 +216,9 @@ Eric Omielan (eomielan) </dd></dl>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Returns a list of node IDs that are ready to transmit. </p>
+
+<p>Get the nodes that are ready to transmit a packet (i.e. have a backoff of 0). </p>
+<dl class="section return"><dt>Returns</dt><dd>std::vector&lt;int&gt; A list of node IDs that are ready to transmit. </dd></dl>
 
 </div>
 </div>
@@ -258,7 +271,45 @@ Eric Omielan (eomielan) </dd></dl>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Called by a node. IF the node is about to start transmitting, is_occupied = true Otherwise if the node is finished transmitting, is_occupied = false. </p>
+
+<p>Set the transmission channel to occupied or unoccupied. </p>
+<p>This function is called by a node that is about to start transmitting a packet in order to block the channel from other nodes. It is also called by a node that has finished transmitting its packet in order to unblock the channel.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">is_occupied</td><td>A boolean value indicating whether to set the channel to occupied or not. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="a57ffa02b686d99e8177a1c9c3040bac0" name="a57ffa02b686d99e8177a1c9c3040bac0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a57ffa02b686d99e8177a1c9c3040bac0">&#9670;&#160;</a></span>transmit_packet()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void transmit_packet </td>
+          <td>(</td>
+          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>active_node_id</em>, </span></td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>ticks</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Transmit a packet from the active node. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">active_node_id</td><td>The ID of the node transmitting the packet. </td></tr>
+    <tr><td class="paramname">ticks</td><td>The current tick of the simulation. </td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>

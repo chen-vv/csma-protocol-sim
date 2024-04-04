@@ -49,6 +49,7 @@ struct Node {
                                   * The backoff value of the node.
                                   * This value determines the amount of time the node
                                   * must wait before transmitting its packet. 
+                                  * It will always be within the range of [0, R).
                                   */
     int R;                      /**< 
                                   * The R value of the node.  
@@ -61,18 +62,88 @@ struct Node {
                                   */
 };
 
-std::vector<Node> nodes;        /**< The nodes in the simulation that can send packets. */
-int packet_length;              /**< The length of the packet in number of ticks it takes to transmit. */
-std::vector<int> R;             /**< The possible backoff windows. */
-int max_retransmission_attempt; /**< 
-                                  * The maximum number of retransmission attempts before the 
-                                  * packet is dropped.
-                                  */
-int total_simulation_time;      /**< The total number of ticks to simulate. */
-int clk;                        /**< The current tick of the simulation. */
-bool channel_occupied;          /**< The state of the transmission channel. */
-int num_packets_received;       /**< The number of packets successfully transmitted. */
-int active_node_id;             /**< The id of the node currently transmitting the packet. */
+/**
+ * @brief The list of all the nodes in the simulation.
+ * 
+ * This vector contains all the nodes in the simulation. Each node is
+ * represented by a Node structure, and the node with id i can be accessed
+ * by nodes[i].
+ * 
+ * The length of this list is parsed and read from the input file, denoted
+ * by N.
+*/
+std::vector<Node> nodes;
+
+/**
+ * @brief The length of the packet in number of ticks it takes to transmit.
+ * 
+ * This variable represents the length of the packet in number of simulation
+ * ticks. Each packet in the simulation takes this number of ticks to transmit.
+ * 
+ * This value is parsed and read from the input file, denoted by L.
+*/
+int packet_length;
+
+/**
+ * @brief A list of possible upper limits on a node's backoff value.
+ * 
+ * This list contains the upper limits on a node's backoff value. By default,
+ * each node starts with the first value in this list, and the value is updated
+ * based on the number of collisions experienced by the node.
+ * 
+ * Note that the length of this list is always equal to M, the maximum 
+ * number of retransmission attempts before the packet is dropped. As a result,
+ * at collision count i, the node's R value is updated to R[i].
+ * 
+ * This list is parsed and read from the input file, denoted by R.
+*/
+std::vector<int> R;
+
+/**
+ * @brief The maximum number of attempts that a node makes to transmit a packet.
+ * 
+ * This variable represents the maximum number of retransmission attempts that
+ * a node makes to transmit a packet. If the node reaches this number of attempts
+ * without successfully transmitting the packet, the packet is dropped and the
+ * node moves on to the next packet.
+ * 
+ * This value is parsed and read from the input file, denoted by M.
+*/
+int max_retransmission_attempt; 
+
+/**
+ * @brief The total number of ticks that this simulation should run for.
+ * 
+ * This variable represents the total number of ticks that the simulation should
+ * run for. The simulation starts at tick 0 and runs until the current tick is
+ * equal to this value.
+ * 
+ * This value is parsed and read from the input file, denoted by T.
+*/
+int total_simulation_time; 
+
+/**
+ * @brief The state of the transmission channel.
+ * 
+ * This variable represents the state of the transmission channel. If the channel
+ * is occupied, this value is true. Otherwise, this value is false.
+*/
+bool channel_occupied; 
+
+/**
+ * @brief The number of simulation ticks during which a packet is transmitted without
+ * collision.
+ * 
+ * This variable represents the number of simulation ticks during which a packet is
+ * transmitted without collision. This value is incremented for each tick, if that
+ * current tick is a successful transmission.
+*/
+int num_packets_received;
+
+/**
+ * @brief The ID of the node currently transmitting the packet.
+*/
+int active_node_id;
 
 /**
  * @brief Generate a backoff value for a node, which is the pseudorandom number generator following
@@ -98,7 +169,7 @@ int generate_backoff(int node_id, int ticks, int R);
 void set_channel_occupied(bool is_occupied);
 
 /**
- * @brief Get the nodes that are ready to transmit a packet (ie have a backoff of 0).
+ * @brief Get the nodes that are ready to transmit a packet (i.e. have a backoff of 0).
  * 
  * @return std::vector<int> A list of node IDs that are ready to transmit.
  */

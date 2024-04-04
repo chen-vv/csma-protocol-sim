@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['r_0',['R',['../struct_node.html#a9b4f1a053a71ad5e028e3d55829c7980',1,'Node']]]
+  ['max_5fretransmission_5fattempt_0',['max_retransmission_attempt',['../csma_8h.html#a8e351be8d25168c9041ce55ce72ecc26',1,'csma.h']]]
 ];

@@ -210,11 +210,7 @@ int main(int argc, char* argv[]) {
                         continue;
                     }
 
-                    // Made a post (#345) asking about this.
-                    // For now, assume we just double R  
-                    // node.R = R[node.collision_count];
-                    node.R = node.R * 2;
-
+                    node.R = R[node.collision_count];
                     node.backoff = generate_backoff(node.id, ticks + 1, node.R);
                 }
             }
