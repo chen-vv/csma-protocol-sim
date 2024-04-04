@@ -138,7 +138,7 @@ bool channel_occupied;
  * transmitted without collision. This value is incremented for each tick, if that
  * current tick is a successful transmission.
 */
-int num_packets_received;
+int num_successful_transmission_ticks;
 
 /**
  * @brief The ID of the node currently transmitting the packet.

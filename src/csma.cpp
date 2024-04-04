@@ -104,12 +104,13 @@ void transmit_packet(int active_node_id, int ticks) {
     active_node.packet_ticks_remaining--;
 
     if (active_node.packet_ticks_remaining == TRANSMIT_COMPLETE) {
-        num_packets_received++;
         active_node.backoff = generate_backoff(active_node.id, ticks + 1, active_node.R);
         set_channel_occupied(false);
 
         std::cout << "Node " << active_node_id << " finished transmitting. new backoff " << nodes[active_node_id].backoff  << std::endl;
     }
+
+    num_successful_transmission_ticks++;
 }
 
 /** 
@@ -163,7 +164,7 @@ int main(int argc, char* argv[]) {
     initialize_nodes();
 
     channel_occupied = false;
-    num_packets_received = 0;
+    num_successful_transmission_ticks = 0;
 
     for (int ticks = 0; ticks < total_simulation_time; ticks++) {
         std::cout << "Tick: " << ticks << std::endl;
@@ -217,6 +218,7 @@ int main(int argc, char* argv[]) {
         }
     }
 
+    // Write the link utilization rate to the output file
     std::ofstream output_file;
     if (argc == 3) {
         output_file.open(argv[2]);
@@ -230,9 +232,9 @@ int main(int argc, char* argv[]) {
     }
 
     output_file << std::fixed << std::setprecision(2);
-    output_file << static_cast<double>(num_packets_received) / total_simulation_time << std::endl;
+    output_file << static_cast<double>(num_successful_transmission_ticks) / total_simulation_time << std::endl;
 
-    std::cout << "packets transferred: " << num_packets_received << ", T = " << total_simulation_time << std::endl;
+    std::cout << "Slots with succcessful transmissions: " << num_successful_transmission_ticks << ", T = " << total_simulation_time << std::endl;
 
     output_file.close();
 
