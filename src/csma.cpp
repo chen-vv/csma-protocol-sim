@@ -161,14 +161,14 @@ transmission:
                     }
                 } else {
                     for (auto& node : nodes) {
-                        if (node.status == READY_TO_TRANSMIT) {
+                        if (node.backoff == 0) {
                             node.collision_count++;
 
                             if (node.collision_count > max_retransmission_attempt) {
                                 // Drop packet and reset node
                                 node.R = R[0];
                                 node.collision_count = 0;
-                                node.backoff = generate_backoff(node.id, ticks, node.R);
+                                node.backoff = generate_backoff(node.id, ticks + 1, node.R);
                                 node.status = WAITING;
                                 continue;
                             }
@@ -178,8 +178,7 @@ transmission:
                             // node.R = R[node.collision_count];
                             node.R = node.R * 2;
 
-                            node.backoff = generate_backoff(node.id, ticks, node.R);
-                            node.status = node.backoff == 0 ? READY_TO_TRANSMIT : WAITING;
+                            node.backoff = generate_backoff(node.id, ticks + 1, node.R);
                         }
                     }
                 }
