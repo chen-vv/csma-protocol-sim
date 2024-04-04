@@ -75,12 +75,15 @@ int num_packets_received;       /**< The number of packets successfully transmit
 int active_node_id;             /**< The id of the node currently transmitting the packet. */
 
 /**
- *  node_id = ID of node
- *  ticks = number of elapsed for loop iterations
- *  R = the R value, aka backoff upper limit value, since backoff is in the range of [0, R)
- * Returns the backoff value of the node, which is the pseudorandom number generator
- * following backoff = mod(node_id + ticks, R)
-*/
+ * @brief Generate a backoff value for a node, which is the pseudorandom number generator following
+ * backoff = mod(node_id + ticks, R)
+ * 
+ * @param node_id The ID of the node to which the backoff value is assigned.
+ * @param ticks The number of ticks that have elapsed in the simulation.
+ * @param R The R value of the node, which is the upper limit of the backoff value since the
+ * backoff is in the range of [0, R).
+ * @return int The backoff value of the node.
+ */
 int generate_backoff(int node_id, int ticks, int R);
 
 /**
