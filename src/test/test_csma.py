@@ -1,26 +1,27 @@
 import os
-import queue
 import subprocess
-import threading
-import time
 
 import pytest
 
 
+@pytest.fixture(scope="module", autouse=True)
+def change_dir():
+    # Chage directory to root of project before tests
+    os.chdir("../..")
+    yield
+
+
 @pytest.mark.parametrize(
     "input_filename, expected_output_data",
-    [("test_input.txt", 0.73)],
+    [("src/test/test_input1.txt", "0.40"), ("src/test/test_input2.txt", "0.73")],
 )
 def test_csma(input_filename, expected_output_data):
-    with open(input_filename, "r") as input_file:
-        input_data = input_file.read()
-
-    simulation_process = subprocess.Popen(["../../csma", input_filename])
+    simulation_process = subprocess.Popen(["./csma", input_filename])
 
     simulation_process.wait()
 
     with open("output.txt", "r") as output_file:
-        output_data = output_file.read()
+        output_data = output_file.read().strip()
 
     assert output_data == expected_output_data
 
