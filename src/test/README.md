@@ -29,3 +29,18 @@ T 11
 
 result:
 ![Test 2](images/test2.png)
+
+## Test 3
+
+input:
+
+```markdown
+N 2
+L 1
+M 2
+R 2 4
+T 7
+```
+
+result:
+![Test 3](images/test3.png)

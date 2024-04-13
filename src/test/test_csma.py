@@ -13,7 +13,11 @@ def change_dir():
 
 @pytest.mark.parametrize(
     "input_filename, expected_output_data",
-    [("src/test/test_input1.txt", "0.40"), ("src/test/test_input2.txt", "0.55")],
+    [
+        ("src/test/test_input1.txt", "0.40"),
+        ("src/test/test_input2.txt", "0.55"),
+        ("src/test/test_input3.txt", "0.43"),
+    ],
 )
 def test_csma(input_filename, expected_output_data):
     simulation_process = subprocess.Popen(["./csma", input_filename])
