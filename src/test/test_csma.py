@@ -17,6 +17,8 @@ def change_dir():
         ("src/test/test_input1.txt", "0.40"),
         ("src/test/test_input2.txt", "0.55"),
         ("src/test/test_input3.txt", "0.43"),
+        ("src/test/test_input4.txt", "0.80"),
+        ("src/test/test_input5.txt", "1.00"),
     ],
 )
 def test_csma(input_filename, expected_output_data):

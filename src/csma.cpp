@@ -104,7 +104,6 @@ void transmit_packet(int active_node_id, int ticks) {
     active_node.packet_ticks_remaining--;
 
     if (active_node.packet_ticks_remaining == TRANSMIT_COMPLETE) {
-        // TODO: Check #348 to see if R value should also be reset
         active_node.R = R[0];
         active_node.collision_count = 0;
         active_node.backoff = generate_backoff(active_node.id, ticks + 1, active_node.R);
