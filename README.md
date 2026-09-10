@@ -1,4 +1,4 @@
-# ELEC 331 Programming Assignment 3: Medium Access and Random Backoff Simulator
+# Medium Access and Random Backoff Simulator
 
 ## Overview
 
